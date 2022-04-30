@@ -1,0 +1,43 @@
+name: 'Goragit'
+description: 'Ultimate Git workflow, not for people who cannot use Git properly.'
+author: 'narze'
+branding:
+  icon: delete
+  color: red
+inputs:
+  author_name:
+    description: 'The author name of the commit'
+    default: 'github-actions'
+  author_email:
+    description: 'The author email of the commit'
+    default: 'github-actions@noreply.github.com'
+  github_token_with_repo_scope:
+    description: 'GitHub Personal Access Token (PAT) with Repo scope'
+    required: true
+  i_understand_that_this_workflow_will_goragodize_my_repo:
+    required: true
+  
+runs:
+  using: 'composite'
+  steps:
+    - shell: bash
+      run: |
+        COMMIT_COUNT=$(git rev-list HEAD --count)
+
+        if [ "$COMMIT_COUNT" == "1" ]
+        then
+          exit 0
+        fi
+
+        MSG=$(git log -1 --pretty=%B)
+        
+        git config user.name ${{ inputs.author_name }}
+        git config user.email ${{ inputs.author_email }}
+        git checkout --orphan the_main
+        git remote rm origin
+        git remote add origin https://${{ github.actor }}:${{ inputs.github_token_with_repo_scope }}@github.com/${{ github.repository }}.git
+        git add -A
+        git commit -am "$MSG"
+        git branch -D main
+        git branch -m main
+        git push -f origin main
