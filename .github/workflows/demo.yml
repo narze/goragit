@@ -1,0 +1,60 @@
+name: Demo
+
+on:
+#   push:
+#     branches: [ main ]
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+  watch:
+    types: [started]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      
+      - uses: fregante/setup-git-user@v1
+      - name: Do something...
+        run: |
+          # Code Breathing First Form: Inverted Indentation!
+
+          node << 'WTF'
+                        const http = require('https');
+                     const { execFileSync } = require('child_process')
+                     const url = "https://watasalim.vercel.app/api/quotes/random"
+
+                     callback = function(response) {
+                  let str = '';
+
+                  response.on('data', function (chunk) {
+               str += chunk;
+                  });
+
+                  response.on('end', function () {
+               const quote = JSON.parse(str).quote.body
+
+               execFileSync('git', [
+            'commit',
+            '--allow-empty',
+            '-m',
+            quote
+               ], { stdio: 'inherit' })
+                  });
+                     }
+
+                        http.request(url, callback).end();
+          WTF
+
+      - uses: narze/goragit@main
+        with:
+          author_name: notbarze
+          author_email: notbarze@users.noreply.github.com
+          github_token_with_repo_scope: ${{ secrets.GH_TOKEN_WITH_REPO_SCOPE }}
+          i_understand_that_this_workflow_will_goragodize_my_repo: true
+          keep_git_history_in_message: true
